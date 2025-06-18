@@ -33,17 +33,23 @@ git clone https://github.com/yourname/EmotionSpeak2.git
 cd EmotionSpeak2
 ```
 
-### 2. 配置 API 密钥
-后端依赖 Azure 认知服务和百度文心API，请在 `backend/` 目录下新建 `.env` 文件，内容参考：
+### 2. 配置 API 密钥（**必须**）
+**你必须在 `backend/` 目录下创建 `.env` 文件，否则后端无法正常启动。**
+
+你可以参考 `backend/.env.example` 文件进行配置。内容如下：
 ```ini
+# Azure认知服务配置（必需）
 AZURE_TEXT_ANALYTICS_KEY=your_text_analytics_key
 AZURE_TEXT_ANALYTICS_ENDPOINT=https://your-text-analytics-endpoint.cognitiveservices.azure.com/
 AZURE_TTS_KEY=your_tts_key
 AZURE_TTS_ENDPOINT=https://your-tts-endpoint.cognitiveservices.azure.com/
 
-# 百度文心大模型API配置（推荐，国内可直接使用）
-BAIDU_WENXIN_API_KEY=your_api_key  # 格式: bce-v3/ALTAK-xxxxxxxxxxxx/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# 百度文心大模型API配置（可选但推荐，国内可直接使用）
+# API Key格式示例: bce-v3/ALTAK-xxxxxxxx/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+BAIDU_WENXIN_API_KEY=your_wenxin_api_key
 ```
+
+> 没有`.env`文件或密钥配置错误会导致服务启动失败。
 
 关于百度文心API的详细设置，请参阅：
 - [百度文心集成指南](backend/WENXIN_SETUP.md)
