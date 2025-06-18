@@ -1,85 +1,237 @@
 body {
-  background: linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%);
   font-family: 'Segoe UI', 'Microsoft YaHei', Arial, sans-serif;
+  background: #f6f8fa;
   margin: 0;
   padding: 0;
 }
 .container {
-  max-width: 480px;
-  margin: 48px auto 0 auto;
+  max-width: 540px;
+  margin: 40px auto 0 auto;
   background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 8px 32px #b0c4de55;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
   padding: 32px 28px 24px 28px;
-  text-align: center;
 }
 h1 {
   font-size: 2.1em;
   margin-bottom: 18px;
-  color: #1890ff;
-  letter-spacing: 2px;
+  color: #222;
 }
 h1 span {
-  font-size: 0.5em;
+  font-size: 0.6em;
   color: #888;
-  margin-left: 8px;
 }
 textarea {
   width: 100%;
   border-radius: 8px;
-  border: 1px solid #b0c4de;
+  border: 1px solid #d9d9d9;
   padding: 12px;
   font-size: 1.1em;
-  resize: vertical;
   margin-bottom: 16px;
-  transition: border 0.2s;
-}
-textarea:focus {
-  border: 1.5px solid #1890ff;
-  outline: none;
+  resize: vertical;
+  min-height: 80px;
 }
 button {
-  background: linear-gradient(90deg, #1890ff 0%, #52c41a 100%);
+  background: #52c41a;
   color: #fff;
   border: none;
   border-radius: 8px;
-  padding: 10px 32px;
+  padding: 10px 28px;
   font-size: 1.1em;
   cursor: pointer;
-  box-shadow: 0 2px 8px #b0c4de33;
-  transition: background 0.2s, transform 0.1s;
+  margin-bottom: 18px;
+  transition: background 0.2s;
 }
 button:hover {
-  background: linear-gradient(90deg, #52c41a 0%, #1890ff 100%);
-  transform: translateY(-2px) scale(1.03);
+  background: #389e0d;
 }
 .loading {
-  margin: 18px 0;
   color: #faad14;
-  font-size: 1.1em;
-  letter-spacing: 2px;
+  font-weight: bold;
+  display: none;
+  margin: 20px 0;
 }
 .result {
-  margin-top: 24px;
-  padding: 18px 0 0 0;
-  border-top: 1px solid #eee;
-  animation: fadeIn 0.7s;
+  display: none;
+  margin-top: 20px;
 }
 .sentiment {
-  font-size: 1.3em;
-  margin-bottom: 10px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
+  margin-bottom: 24px;
 }
+.sentiment-emoji {
+  font-size: 40px; /* 初始大小，后续会根据情感强度动态调整 */
+  margin-right: 16px;
+  transition: font-size 0.3s;
+}
+.sentiment-label {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+.chart-container {
+  height: 180px;
+  margin: 20px 0;
+}
+.section {
+  margin-bottom: 24px;
+}
+.section-title {
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #1f1f1f;
+}
+
+/* 详细情感卡片样式 */
+.emotion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+.emotion-card {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.emotion-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+.emotion-emoji {
+  font-size: 2em;
+  margin-right: 12px;
+}
+.emotion-info {
+  flex: 1;
+}
+.emotion-name {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.emotion-bar-container {
+  width: 100%;
+  height: 6px;
+  background: #eaeaea;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.emotion-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #52c41a, #1890ff);
+  border-radius: 3px;
+}
+.emotion-percentage {
+  font-size: 0.8em;
+  color: #888;
+  margin-top: 4px;
+}
+
+/* 强度不同的情感卡片样式 */
+.strong-emotion {
+  background: rgba(82, 196, 26, 0.1);
+  border-left: 3px solid #52c41a;
+}
+.medium-emotion {
+  background: rgba(24, 144, 255, 0.05);
+  border-left: 3px solid #1890ff;
+}
+
+/* 句子级情感样式 */
+.sentence-sentiments ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sentence-item {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #fafafa;
+  border-radius: 8px;
+}
+.sentence-sentiment {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8px;
+}
+.sentence-bar-container {
+  height: 4px;
+  display: flex;
+  margin-bottom: 8px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.sentence-bar {
+  height: 100%;
+}
+.sentence-bar.positive {
+  background-color: #52c41a;
+}
+.sentence-bar.negative {
+  background-color: #f5222d;
+}
+.sentence-bar.neutral {
+  background-color: #faad14;
+}
+.sentence-text {
+  line-height: 1.5;
+}
+
+/* TTS参数样式 */
+.tts-params-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+  background: #f0f7ff;
+  padding: 16px;
+  border-radius: 8px;
+}
+.tts-param {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.param-label {
+  font-size: 0.8em;
+  color: #666;
+  margin-bottom: 4px;
+}
+.param-value {
+  font-weight: 500;
+  color: #1890ff;
+  word-break: break-word;
+}
+
+audio {
+  width: 100%;
+  margin-top: 24px;
+  border-radius: 24px;
+}
+
+/* 响应式调整 */
+@media (max-width: 600px) {
+  .container {
+    margin: 20px 10px;
+    padding: 20px 16px;
+  }
+  .emotion-grid {
+    grid-template-columns: 1fr;
+  }
+  .tts-params-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 footer {
   text-align: center;
   color: #aaa;
   font-size: 0.95em;
-  margin: 40px 0 10px 0;
-}
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px);}
-  to { opacity: 1; transform: translateY(0);}
+  margin: 30px 0 10px 0;
 } 

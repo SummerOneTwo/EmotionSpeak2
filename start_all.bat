@@ -24,9 +24,5 @@ cd ..
 
 REM 检查 frontend/index.html 是否存在
 if exist frontend\index.html (
-    echo [前端] 检测到 index.html，直接用浏览器打开 frontend\index.html 即可，无需 npm。
     start frontend\index.html
 )
-
-echo 后端和前端已分别在新命令行窗口启动。
-echo 如需关闭，请手动关闭对应的命令行窗口。 

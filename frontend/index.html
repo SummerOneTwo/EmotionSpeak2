@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EmotionSpeak - 情感分析与语音合成</title>
   <link rel="stylesheet" href="style.css">
   <!-- Chart.js 用于可视化 -->
@@ -12,15 +13,27 @@
     <h1>EmotionSpeak <span>情感分析与语音合成</span></h1>
     <textarea id="text" rows="6" placeholder="请输入要分析和朗读的文本..."></textarea>
     <button id="analyzeBtn">分析并朗读</button>
-    <div id="loading" class="loading" style="display:none;">分析中...</div>
-    <div id="result" class="result" style="display:none;">
+    <div id="loading" class="loading">分析中...</div>
+    <div id="result" class="result">
       <div class="sentiment">
-        <span id="sentimentLabel"></span>
-        <span id="sentimentEmoji"></span>
+        <div id="sentimentEmoji" class="sentiment-emoji"></div>
+        <div id="sentimentLabel" class="sentiment-label"></div>
       </div>
-      <canvas id="confidenceChart" width="300" height="180"></canvas>
+      
+      <div class="section">
+        <div class="section-title">情感置信度</div>
+        <div class="chart-container">
+          <canvas id="confidenceChart"></canvas>
+        </div>
+      </div>
+      
+      <div id="detailedEmotions" class="section"></div>
+      
+      <div id="sentenceSentiments" class="section"></div>
+      
+      <div id="ttsParams" class="section"></div>
     </div>
-    <audio id="audio" controls style="display:none;margin-top:20px;"></audio>
+    <audio id="audio" controls></audio>
   </div>
   <footer>
     EmotionSpeak © 2024 | Powered by Azure AI
