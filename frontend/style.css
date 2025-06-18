@@ -1,0 +1,85 @@
+body {
+  background: linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%);
+  font-family: 'Segoe UI', 'Microsoft YaHei', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+.container {
+  max-width: 480px;
+  margin: 48px auto 0 auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px #b0c4de55;
+  padding: 32px 28px 24px 28px;
+  text-align: center;
+}
+h1 {
+  font-size: 2.1em;
+  margin-bottom: 18px;
+  color: #1890ff;
+  letter-spacing: 2px;
+}
+h1 span {
+  font-size: 0.5em;
+  color: #888;
+  margin-left: 8px;
+}
+textarea {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #b0c4de;
+  padding: 12px;
+  font-size: 1.1em;
+  resize: vertical;
+  margin-bottom: 16px;
+  transition: border 0.2s;
+}
+textarea:focus {
+  border: 1.5px solid #1890ff;
+  outline: none;
+}
+button {
+  background: linear-gradient(90deg, #1890ff 0%, #52c41a 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 32px;
+  font-size: 1.1em;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #b0c4de33;
+  transition: background 0.2s, transform 0.1s;
+}
+button:hover {
+  background: linear-gradient(90deg, #52c41a 0%, #1890ff 100%);
+  transform: translateY(-2px) scale(1.03);
+}
+.loading {
+  margin: 18px 0;
+  color: #faad14;
+  font-size: 1.1em;
+  letter-spacing: 2px;
+}
+.result {
+  margin-top: 24px;
+  padding: 18px 0 0 0;
+  border-top: 1px solid #eee;
+  animation: fadeIn 0.7s;
+}
+.sentiment {
+  font-size: 1.3em;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+footer {
+  text-align: center;
+  color: #aaa;
+  font-size: 0.95em;
+  margin: 40px 0 10px 0;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px);}
+  to { opacity: 1; transform: translateY(0);}
+} 

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>EmotionSpeak - 情感分析与语音合成</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Chart.js 用于可视化 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>EmotionSpeak <span>情感分析与语音合成</span></h1>
+    <textarea id="text" rows="6" placeholder="请输入要分析和朗读的文本..."></textarea>
+    <button id="analyzeBtn">分析并朗读</button>
+    <div id="loading" class="loading" style="display:none;">分析中...</div>
+    <div id="result" class="result" style="display:none;">
+      <div class="sentiment">
+        <span id="sentimentLabel"></span>
+        <span id="sentimentEmoji"></span>
+      </div>
+      <canvas id="confidenceChart" width="300" height="180"></canvas>
+    </div>
+    <audio id="audio" controls style="display:none;margin-top:20px;"></audio>
+  </div>
+  <footer>
+    EmotionSpeak © 2024 | Powered by Azure AI
+  </footer>
+  <script src="main.js"></script>
+</body>
+</html> 
