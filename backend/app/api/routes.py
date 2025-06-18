@@ -2,6 +2,10 @@ from fastapi import APIRouter, Response
 from app.models.schemas import TextRequest, TTSRequest, TextResponse
 from app.services.azure_emotion import analyze_emotion
 from app.services.azure_tts import synthesize_speech
+<<<<<<< Updated upstream
+=======
+from app.services.wenxin_analyzer import analyze_with_wenxin
+>>>>>>> Stashed changes
 import logging
 
 router = APIRouter()
@@ -202,7 +206,30 @@ def recommend_tts_params(emotion_data):
 @router.post("/analyze", response_model=TextResponse)
 def analyze(request: TextRequest):
     emotion = analyze_emotion(request.text)
+<<<<<<< Updated upstream
     tts_params = recommend_tts_params(emotion)
+=======
+    
+    try:
+        # 尝试使用百度文心API
+        wenxin_tts_params = await analyze_with_wenxin(request.text, emotion)
+        if wenxin_tts_params:
+            logging.info("Using Baidu Wenxin-generated TTS parameters")
+            tts_params = wenxin_tts_params
+            return {
+                **emotion,
+                "tts_params": tts_params
+            }
+        
+        # 如果文心失败，使用规则型推荐
+        logging.info("Falling back to rule-based TTS parameters")
+        tts_params = recommend_tts_params(emotion)
+    except Exception as e:
+        # 异常情况下回退到规则型推荐
+        logging.error(f"Error using AI services: {str(e)}, falling back to rule-based parameters")
+        tts_params = recommend_tts_params(emotion)
+    
+>>>>>>> Stashed changes
     return {
         **emotion,
         "tts_params": tts_params
@@ -210,15 +237,9 @@ def analyze(request: TextRequest):
 
 @router.post("/tts")
 def tts(request: TTSRequest):
-    # 记录请求参数以便调试
-    logging.info(f"TTS Request: voice={request.voice}, style={request.style}, rate={request.rate}, pitch={request.pitch}")
-    
     # 正确处理可选参数
     role = request.role if hasattr(request, 'role') and request.role is not None else None
     styledegree = request.styledegree if hasattr(request, 'styledegree') and request.styledegree is not None else "1.0"
-    
-    logging.info(f"Optional params: role={role}, styledegree={styledegree}")
-    logging.info(f"Text length: {len(request.text)} characters")
     
     try:
         audio = synthesize_speech(

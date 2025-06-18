@@ -8,7 +8,6 @@ def preprocess_text(text: str) -> str:
     """对输入文本进行预处理，提高情感分析准确性"""
     # 去除多余空格
     text = re.sub(r'\s+', ' ', text).strip()
-    # 其他预处理步骤可以根据需要添加
     return text
 
 def map_to_detailed_emotions(confidence_scores: Dict[str, float]) -> Dict[str, float]:
