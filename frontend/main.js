@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000/api"; // 如部署到服务器请改为实际后端地址
+const API_URL = "http://localhost:8000/api/v1"; // 如部署到服务器请改为实际后端地址
 
 const analyzeBtn = document.getElementById('analyzeBtn');
 const textArea = document.getElementById('text');
