@@ -5,17 +5,19 @@ body {
   padding: 0;
 }
 .container {
-  max-width: 540px;
+  max-width: 85%;
+  width: 1100px;
   margin: 40px auto 0 auto;
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-  padding: 32px 28px 24px 28px;
+  padding: 32px 40px 24px 40px;
 }
 h1 {
   font-size: 2.1em;
   margin-bottom: 18px;
   color: #222;
+  text-align: center;
 }
 h1 span {
   font-size: 0.6em;
@@ -41,6 +43,9 @@ button {
   cursor: pointer;
   margin-bottom: 18px;
   transition: background 0.2s;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 button:hover {
   background: #389e0d;
@@ -50,6 +55,7 @@ button:hover {
   font-weight: bold;
   display: none;
   margin: 20px 0;
+  text-align: center;
 }
 .result {
   display: none;
@@ -59,6 +65,7 @@ button:hover {
   display: flex;
   align-items: center;
   margin-bottom: 24px;
+  justify-content: center;
 }
 .sentiment-emoji {
   font-size: 40px; /* 初始大小，后续会根据情感强度动态调整 */
@@ -70,16 +77,127 @@ button:hover {
   font-weight: bold;
 }
 .chart-container {
-  height: 180px;
-  margin: 20px 0;
+  height: 220px;
+  margin: 20px auto;
+  max-width: 360px;
 }
 .section {
   margin-bottom: 24px;
+  padding-top: 10px;
+  border-top: 1px solid #f0f0f0;
 }
 .section-title {
   margin-bottom: 8px;
   font-weight: bold;
   color: #1f1f1f;
+}
+.section b {
+  display: block;
+  margin-bottom: 12px;
+  color: #222;
+  font-size: 1.05em;
+}
+
+/* 折叠面板样式 */
+.collapsible {
+  background-color: #f6f8fa;
+  cursor: pointer;
+  padding: 12px 15px;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  text-align: left;
+  outline: none;
+  font-weight: 500;
+  font-size: 1.05em;
+  margin-bottom: 2px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s;
+  color: #222;
+  border-left: 3px solid #1890ff;
+}
+
+.collapsible:hover {
+  background-color: #e6f7ff;
+}
+
+.collapsible:after {
+  content: '\002B';
+  font-weight: bold;
+  float: right;
+  font-size: 1.2em;
+  color: #1890ff;
+}
+
+.active:after {
+  content: "\2212";
+}
+
+.collapsible-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  background-color: white;
+  border-radius: 0 0 8px 8px;
+  margin-bottom: 10px;
+}
+
+.collapsible-inner {
+  padding: 12px 15px;
+}
+
+/* 句子级情感分析特殊处理 */
+.sentence-list {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 5px;
+  margin-top: 10px;
+}
+
+/* 进度条指示器 */
+.progress-indicator {
+  display: inline-block;
+  width: 65px;
+  height: 10px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-left: 10px;
+  position: relative;
+  top: 1px;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 5px;
+}
+
+.progress-positive {
+  background-color: #52c41a;
+}
+
+.progress-negative {
+  background-color: #f5222d;
+}
+
+.progress-neutral {
+  background-color: #faad14;
+}
+
+.progress-mixed {
+  background: linear-gradient(90deg, #52c41a 33%, #f5222d 33%, #f5222d 66%, #faad14 66%);
+}
+
+/* 两列布局容器 */
+.two-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-top: 30px;
 }
 
 /* 详细情感卡片样式 */
@@ -248,23 +366,25 @@ button:hover {
   margin-top: 16px;
 }
 .opinion-section h4 {
-  margin: 0 0 12px 0;
-  color: #333;
-  font-size: 1em;
+  margin: 0 0 10px 0;
+  font-size: 0.95em;
+  color: #555;
 }
 .aspects-grid, .opinions-grid {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: 8px;
+  margin-bottom: 16px;
 }
 .aspect-item, .opinion-item {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px;
-  border-radius: 6px;
-  font-size: 0.9em;
   flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.9em;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 .aspect-item.positive, .opinion-item.positive {
   background: rgba(82, 196, 26, 0.05);
@@ -280,23 +400,27 @@ button:hover {
 }
 .aspect-text, .opinion-text {
   font-weight: 500;
-  flex: 1;
-  min-width: 0;
+  color: #222;
+  margin-right: 6px;
 }
 .aspect-sentiment, .opinion-sentiment {
   font-size: 0.8em;
   padding: 2px 6px;
   border-radius: 10px;
-  background: #f0f0f0;
+  background: rgba(0,0,0,0.05);
+  color: #666;
 }
 .aspect-confidence, .opinion-confidence {
   font-size: 0.8em;
-  color: #666;
+  color: #999;
 }
 .opinion-aspect {
   font-size: 0.8em;
+  width: 100%;
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px dashed #eee;
   color: #888;
-  font-style: italic;
 }
 .aspect-negated, .opinion-negated {
   background: #ff4d4f;
@@ -304,24 +428,25 @@ button:hover {
   padding: 2px 6px;
   border-radius: 10px;
   font-size: 0.7em;
+  margin-left: 4px;
 }
 
-/* 句子级情感样式 */
+/* 句子级情感分析样式 */
 .sentence-sentiments ul {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 16px 0 0 0;
 }
 .sentence-item {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   padding: 12px;
-  background: #fafafa;
+  background: #f9f9f9;
   border-radius: 8px;
 }
 .sentence-sentiment {
-  font-weight: bold;
   display: block;
-  margin-bottom: 8px;
+  font-weight: 500;
+  margin-bottom: 6px;
 }
 .sentence-bar-container {
   height: 4px;
@@ -343,26 +468,25 @@ button:hover {
   background-color: #faad14;
 }
 .sentence-text {
+  font-size: 0.95em;
   line-height: 1.5;
 }
 
-/* TTS参数样式 */
+/* TTS 参数样式 */
 .tts-params-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 12px;
-  margin-top: 12px;
-  background: #f0f7ff;
-  padding: 16px;
-  border-radius: 8px;
+  margin-top: 16px;
+  position: relative;
 }
 .tts-param {
+  background: #f0f8ff;
+  padding: 10px;
+  border-radius: 8px;
+  border-left: 3px solid #1890ff;
   display: flex;
   flex-direction: column;
-  background: white;
-  padding: 10px;
-  border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 .param-label {
   font-size: 0.8em;
@@ -374,87 +498,97 @@ button:hover {
   color: #1890ff;
   word-break: break-word;
 }
-
-/* 音频控件样式 */
 audio {
   width: 100%;
-  margin-top: 20px;
-  border-radius: 8px;
+  margin: 20px auto;
+  border-radius: 24px;
   display: none;
+  background: #f0f0f0;
+  height: 40px;
+  max-width: 800px;
 }
 
-/* 响应式设计 */
-@media (max-width: 600px) {
+/* 响应式调整 */
+@media (max-width: 1000px) {
   .container {
-    margin: 20px 16px;
+    width: 90%;
     padding: 24px 20px;
   }
-  
+  .two-column {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    width: 95%;
+    margin: 20px auto;
+    padding: 20px 16px;
+  }
   .emotion-grid {
     grid-template-columns: 1fr;
   }
-  
   .intensity-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr 1fr;
   }
-  
   .features-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr 1fr;
   }
-  
   .tts-params-grid {
     grid-template-columns: 1fr;
   }
-  
   .aspect-item, .opinion-item {
-    flex-direction: column;
-    align-items: flex-start;
+    width: 100%;
   }
 }
 
 footer {
   text-align: center;
-  color: #aaa;
-  font-size: 0.95em;
-  margin: 30px 0 10px 0;
+  color: #999;
+  margin: 30px 0;
+  font-size: 0.9em;
 }
 
+/* 复制按钮样式 */
 .copy-btn {
-  background: #1890ff;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 16px;
-  font-size: 0.95em;
+  position: absolute;
+  right: 0;
+  top: -2px;
+  background: #e6f7ff;
+  color: #1890ff;
+  font-size: 0.8em;
+  padding: 4px 10px;
+  margin: 0;
+  border-radius: 4px;
+  border: 1px solid #91d5ff;
   cursor: pointer;
-  margin-bottom: 10px;
-  margin-left: 12px;
-  transition: background 0.2s;
 }
 .copy-btn:hover {
-  background: #40a9ff;
+  background: #bae7ff;
 }
 .param-id {
-  color: #888;
-  font-size: 0.9em;
-  margin-left: 4px;
+  font-size: 0.8em;
+  color: #999;
+  font-weight: normal;
 }
 .param-desc {
+  font-size: 0.8em;
   color: #888;
-  font-size: 0.95em;
-  margin-top: 2px;
+  margin-top: 4px;
+  font-style: italic;
 }
 .styledegree-bar {
-  width: 60px;
-  height: 8px;
-  background: #eaeaea;
-  border-radius: 4px;
-  display: inline-block;
-  margin-right: 8px;
-  vertical-align: middle;
+  width: 100%;
+  height: 4px;
+  background: #e8e8e8;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 4px;
+  margin-bottom: 4px;
 }
 .styledegree-inner {
   height: 100%;
-  background: linear-gradient(90deg, #52c41a, #1890ff);
-  border-radius: 4px;
+  background: #1890ff;
+  border-radius: 2px;
 } 
