@@ -11,7 +11,4 @@ class Settings:
     
     BAIDU_WENXIN_API_KEY = os.getenv("BAIDU_WENXIN_API_KEY")
 
-LOG_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../logs')
-LOG_FILE = os.path.join(LOG_DIR, 'emotion_speak.log')
-
 settings = Settings() 

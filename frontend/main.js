@@ -93,6 +93,44 @@ const voiceNameMap = {
   "en-US-RogerNeural": "Roger (深沉男声)"
 };
 
+// 新增：复制TTS参数到剪贴板
+function copyTTSParams(params) {
+  const text = JSON.stringify(params, null, 2);
+  navigator.clipboard.writeText(text).then(() => {
+    alert("TTS参数已复制到剪贴板！");
+  });
+}
+
+// 渲染TTS参数区块
+function renderTTSParams(ttsParams) {
+  if (!ttsParams) {
+    ttsParamsDiv.innerHTML = '<b>本次AI推荐朗读参数：</b><div class="tts-params-grid"><div class="tts-param">-</div></div>';
+    return;
+  }
+  let html = '<b>本次AI推荐朗读参数：</b>';
+  html += '<button id="copyTTSBtn" class="copy-btn">复制参数</button>';
+  html += '<div class="tts-params-grid">';
+  const voiceInfo = ttsParams.voice_info || {};
+  // voice
+  html += `<div class="tts-param"><div class="param-label">语音模型</div><div class="param-value">${voiceNameMap[ttsParams.voice] || ttsParams.voice} <span class="param-id">(${ttsParams.voice})</span></div>${voiceInfo.description ? `<div class="param-desc">${voiceInfo.description}</div>` : ''}</div>`;
+  // style
+  html += `<div class="tts-param"><div class="param-label">语音风格</div><div class="param-value">${styleNameMap[ttsParams.style] || ttsParams.style} <span class="param-id">(${ttsParams.style})</span></div></div>`;
+  // role
+  if (ttsParams.role) {
+    html += `<div class="tts-param"><div class="param-label">角色</div><div class="param-value">${roleNameMap[ttsParams.role] || ttsParams.role} <span class="param-id">(${ttsParams.role})</span></div></div>`;
+  }
+  // rate
+  html += `<div class="tts-param"><div class="param-label">语速调整</div><div class="param-value">${ttsParams.rate}</div></div>`;
+  // pitch
+  html += `<div class="tts-param"><div class="param-label">音调调整</div><div class="param-value">${ttsParams.pitch}</div></div>`;
+  // styledegree
+  html += `<div class="tts-param"><div class="param-label">风格强度</div><div class="param-value"><div class="styledegree-bar"><div class="styledegree-inner" style="width:${Math.min(100, Math.round(parseFloat(ttsParams.styledegree)*50))}%"></div></div>${ttsParams.styledegree}</div></div>`;
+  html += '</div>';
+  ttsParamsDiv.innerHTML = html;
+  // 绑定复制按钮
+  document.getElementById('copyTTSBtn').onclick = () => copyTTSParams(ttsParams);
+}
+
 analyzeBtn.onclick = async function() {
   const text = textArea.value.trim();
   if (!text) {
@@ -361,55 +399,10 @@ analyzeBtn.onclick = async function() {
     sentenceSentimentsDiv.innerHTML += '</ul>';
   }
 
-  // 10. 展示TTS参数
-  ttsParamsDiv.innerHTML = '';
-  if (emotion.tts_params) {
-    ttsParamsDiv.innerHTML = '<b>语音合成参数：</b><div class="tts-params-grid">';
-    const voiceInfo = emotion.tts_params.voice_info || {};
-    
-    Object.entries(emotion.tts_params).forEach(([key, value]) => {
-      let displayValue = value;
-      let displayName = key;
-      
-      if (key === 'style') {
-        displayName = '语音风格';
-        displayValue = styleNameMap[value] || value;
-      } else if (key === 'voice') {
-        displayName = '语音模型';
-        // 显示语音名+性别+描述
-        if (voiceInfo && voiceInfo.name) {
-          const gender = voiceInfo.gender === 'male' ? '男声' : (voiceInfo.gender === 'female' ? '女声' : '');
-          displayValue = `${voiceInfo.name}${gender ? ' (' + gender + ')' : ''}${voiceInfo.description ? ' - ' + voiceInfo.description : ''}`;
-        } else {
-          displayValue = voiceNameMap[value] || value;
-        }
-      } else if (key === 'rate') {
-        displayName = '语速调整';
-      } else if (key === 'pitch') {
-        displayName = '音调调整';
-      } else if (key === 'role') {
-        // 只显示voice支持的角色，role为None时不显示
-        if (!value || !voiceInfo || !voiceInfo.roles || !voiceInfo.roles.includes(value)) return;
-        displayName = '角色';
-        displayValue = roleNameMap[value] || value;
-      } else if (key === 'styledegree') {
-        displayName = '风格强度';
-      } else if (key === 'voice_info') {
-        return; // 不单独显示
-      }
-      
-      ttsParamsDiv.innerHTML += `
-        <div class="tts-param">
-          <div class="param-label">${displayName}</div>
-          <div class="param-value">${displayValue}</div>
-        </div>
-      `;
-    });
-    
-    ttsParamsDiv.innerHTML += '</div>';
-  }
+  // 7. 展示TTS参数
+  renderTTSParams(emotion.tts_params);
 
-  // 11. 语音合成
+  // 10. 语音合成
   if (emotion.tts_params) {
     try {
       const ttsRes = await fetch(`${API_URL}/tts`, {
@@ -427,7 +420,9 @@ analyzeBtn.onclick = async function() {
         audio.src = audioUrl;
         audio.style.display = "block";
       } else {
-        console.error("TTS failed:", ttsRes.status);
+        const errText = await ttsRes.text();
+        alert("TTS合成失败！\n" + errText);
+        console.error("TTS failed:", ttsRes.status, errText);
       }
     } catch (e) {
       console.error("TTS error:", e);

@@ -1,6 +1,6 @@
 @echo off
 chcp 65001
-REM 一键启动 EmotionSpeak 后端和前端开发环境（.bat 版，含虚拟环境）
+REM 一键启动 EmotionSpeak v2 后端和前端开发环境（.bat 版，含虚拟环境）
 
 REM 启动后端
 cd backend
@@ -18,8 +18,8 @@ echo [后端] 安装依赖...
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 
-echo [后端] 启动 FastAPI...
-start cmd /k "chcp 65001 && call venv\Scripts\activate.bat && uvicorn main:app --reload"
+echo [后端] 启动 FastAPI (API前缀为 /api/v1)...
+start cmd /k "chcp 65001 && call venv\Scripts\activate.bat && uvicorn app.main:app --reload"
 cd ..
 
 REM 检查 frontend/index.html 是否存在
