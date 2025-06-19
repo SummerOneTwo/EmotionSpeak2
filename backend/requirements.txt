@@ -2,9 +2,5 @@ fastapi
 uvicorn
 python-dotenv
 azure-ai-textanalytics
-<<<<<<< Updated upstream
-azure-cognitiveservices-speech 
-=======
 azure-cognitiveservices-speech
-requests>=2.28.0 
->>>>>>> Stashed changes
+requests>=2.28.0

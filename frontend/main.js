@@ -21,10 +21,9 @@ const sentimentMap = {
 
 // 情感表情映射
 const emotionEmojiMap = {
-  "喜悦": "😄", "满足": "😊", "愉快": "🙂",
-  "愤怒": "😡", "悲伤": "😭", "担忧": "😟", 
-  "不满": "😒", "轻微不适": "😕",
-  "平静": "😌", "思考": "🤔"
+  "喜悦": "😄", "满足": "😊", "愉快": "🙂", "兴奋": "🤩", "满意": "😌", "轻微积极": "🙂",
+  "愤怒": "😡", "悲伤": "😭", "担忧": "😟", "不满": "😒", "轻微不适": "😕", "绝望": "😰", "焦虑": "😨", "困惑": "😕",
+  "平静": "😌", "思考": "🤔", "客观": "😐", "冷静": "😶", "理性": "🧐"
 };
 
 // TTS样式和角色的友好显示名称
@@ -49,7 +48,11 @@ const styleNameMap = {
   "newscast": "新闻播报",
   "narration-professional": "专业解说",
   "empathetic": "感同身受",
-  "documentary-narration": "纪录片解说"
+  "documentary-narration": "纪录片解说",
+  "gentle": "温柔",
+  "affectionate": "亲切",
+  "embarrassed": "尴尬",
+  "soft": "柔和"
 };
 
 const roleNameMap = {
@@ -61,6 +64,33 @@ const roleNameMap = {
   "SeniorMale": "老年男性",
   "Girl": "女孩", 
   "Boy": "男孩"
+};
+
+// 语音模型友好名称映射
+const voiceNameMap = {
+  // 中文语音模型
+  "zh-CN-XiaoxiaoNeural": "晓晓 (年轻女声)",
+  "zh-CN-XiaoyiNeural": "晓伊 (温柔女声)",
+  "zh-CN-XiaomoNeural": "晓墨 (成熟女声)",
+  "zh-CN-XiaoruiNeural": "晓睿 (专业女声)",
+  "zh-CN-XiaohanNeural": "晓涵 (活泼女声)",
+  "zh-CN-XiaoxuanNeural": "晓萱 (温柔女声)",
+  "zh-CN-YunxiNeural": "云希 (年轻男声)",
+  "zh-CN-YunyangNeural": "云扬 (成熟男声)",
+  "zh-CN-YunyeNeural": "云野 (深沉男声)",
+  "zh-CN-YunjianNeural": "云健 (稳重男声)",
+  
+  // 英文语音模型
+  "en-US-AriaNeural": "Aria (自然女声)",
+  "en-US-JennyNeural": "Jenny (友好女声)",
+  "en-US-EmmaNeural": "Emma (专业女声)",
+  "en-US-SaraNeural": "Sara (助手女声)",
+  "en-US-MichelleNeural": "Michelle (温暖女声)",
+  "en-US-GuyNeural": "Guy (自然男声)",
+  "en-US-DavisNeural": "Davis (活力男声)",
+  "en-US-TonyNeural": "Tony (成熟男声)",
+  "en-US-BrianNeural": "Brian (友好男声)",
+  "en-US-RogerNeural": "Roger (深沉男声)"
 };
 
 analyzeBtn.onclick = async function() {
@@ -92,11 +122,11 @@ analyzeBtn.onclick = async function() {
   loadingDiv.style.display = "none";
   resultDiv.style.display = "block";
   const s = sentimentMap[emotion.overall_sentiment] || sentimentMap.neutral;
-  sentimentLabel.innerText = `主情感：${s.label} (强度: ${emotion.emotion_intensity || 0}%)`;
+  const intensity = emotion.intensity_analysis?.overall_intensity || emotion.emotion_intensity || 50;
+  sentimentLabel.innerText = `主情感：${s.label} (强度: ${intensity}%)`;
   sentimentEmoji.innerText = s.emoji;
   
   // 根据情感强度改变emoji的大小
-  const intensity = emotion.emotion_intensity || 50;
   const emojiSize = Math.max(40, Math.min(80, 40 + intensity/2)); // 40px-80px
   sentimentEmoji.style.fontSize = `${emojiSize}px`;
 
@@ -168,7 +198,139 @@ analyzeBtn.onclick = async function() {
     });
   }
 
-  // 5. 展示句子级情感
+  // 5. 展示情感强度分析
+  if (emotion.intensity_analysis) {
+    const intensityDiv = document.createElement('div');
+    intensityDiv.className = 'section';
+    intensityDiv.innerHTML = `
+      <b>情感强度分析：</b>
+      <div class="intensity-grid">
+        <div class="intensity-item">
+          <span class="intensity-label">整体强度</span>
+          <span class="intensity-value">${emotion.intensity_analysis.overall_intensity}%</span>
+        </div>
+        <div class="intensity-item">
+          <span class="intensity-label">波动性</span>
+          <span class="intensity-value">${emotion.intensity_analysis.volatility}%</span>
+        </div>
+        <div class="intensity-item">
+          <span class="intensity-label">确定性</span>
+          <span class="intensity-value">${emotion.intensity_analysis.certainty}%</span>
+        </div>
+        <div class="intensity-item">
+          <span class="intensity-label">复杂度</span>
+          <span class="intensity-value">${emotion.intensity_analysis.complexity}%</span>
+        </div>
+        <div class="intensity-item">
+          <span class="intensity-label">主导情感</span>
+          <span class="intensity-value">${emotion.intensity_analysis.dominant_emotion}</span>
+        </div>
+      </div>
+    `;
+    resultDiv.insertBefore(intensityDiv, sentenceSentimentsDiv);
+  }
+
+  // 6. 展示文本特征
+  if (emotion.text_features) {
+    const featuresDiv = document.createElement('div');
+    featuresDiv.className = 'section';
+    featuresDiv.innerHTML = `
+      <b>文本特征：</b>
+      <div class="features-grid">
+        <div class="feature-item">
+          <span class="feature-label">文本长度</span>
+          <span class="feature-value">${emotion.text_features.length} 字符</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-label">句子数量</span>
+          <span class="feature-value">${emotion.text_features.sentence_count} 句</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-label">感叹号</span>
+          <span class="feature-value">${emotion.text_features.has_exclamation ? '有' : '无'}</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-label">问号</span>
+          <span class="feature-value">${emotion.text_features.has_question ? '有' : '无'}</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-label">省略号</span>
+          <span class="feature-value">${emotion.text_features.has_ellipsis ? '有' : '无'}</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-label">大写比例</span>
+          <span class="feature-value">${(emotion.text_features.capitalization_ratio * 100).toFixed(1)}%</span>
+        </div>
+      </div>
+    `;
+    resultDiv.insertBefore(featuresDiv, sentenceSentimentsDiv);
+  }
+
+  // 7. 展示情感关键词
+  if (emotion.sentiment_keywords && emotion.sentiment_keywords.length > 0) {
+    const keywordsDiv = document.createElement('div');
+    keywordsDiv.className = 'section';
+    keywordsDiv.innerHTML = `
+      <b>情感关键词：</b>
+      <div class="keywords-grid">
+        ${emotion.sentiment_keywords.map(keyword => `
+          <div class="keyword-item ${keyword.sentiment}">
+            <span class="keyword-text">${keyword.word}</span>
+            <span class="keyword-sentiment">${keyword.sentiment}</span>
+            <span class="keyword-confidence">${(keyword.confidence * 100).toFixed(0)}%</span>
+            ${keyword.is_negated ? '<span class="keyword-negated">否定</span>' : ''}
+          </div>
+        `).join('')}
+      </div>
+    `;
+    resultDiv.insertBefore(keywordsDiv, sentenceSentimentsDiv);
+  }
+
+  // 8. 展示观点挖掘数据
+  if (emotion.opinion_mining && (emotion.opinion_mining.aspects.length > 0 || emotion.opinion_mining.opinions.length > 0)) {
+    const opinionDiv = document.createElement('div');
+    opinionDiv.className = 'section';
+    
+    let opinionHtml = '<b>观点挖掘：</b>';
+    
+    if (emotion.opinion_mining.aspects.length > 0) {
+      opinionHtml += '<div class="opinion-section"><h4>情感对象：</h4><div class="aspects-grid">';
+      emotion.opinion_mining.aspects.forEach(aspect => {
+        const confidence = (aspect.confidence_scores[aspect.sentiment] * 100).toFixed(0);
+        opinionHtml += `
+          <div class="aspect-item ${aspect.sentiment}">
+            <span class="aspect-text">${aspect.text}</span>
+            <span class="aspect-sentiment">${aspect.sentiment}</span>
+            <span class="aspect-confidence">${confidence}%</span>
+            ${aspect.is_negated ? '<span class="aspect-negated">否定</span>' : ''}
+          </div>
+        `;
+      });
+      opinionHtml += '</div></div>';
+    }
+    
+    if (emotion.opinion_mining.opinions.length > 0) {
+      opinionHtml += '<div class="opinion-section"><h4>具体观点：</h4><div class="opinions-grid">';
+      emotion.opinion_mining.opinions.forEach(opinion => {
+        const confidence = (opinion.confidence_scores[opinion.sentiment] * 100).toFixed(0);
+        opinionHtml += `
+          <div class="opinion-item ${opinion.sentiment}">
+            <span class="opinion-text">${opinion.text}</span>
+            <span class="opinion-sentiment">${opinion.sentiment}</span>
+            <span class="opinion-confidence">${confidence}%</span>
+            <span class="opinion-aspect">关于: ${opinion.related_aspect}</span>
+            ${opinion.is_negated ? '<span class="opinion-negated">否定</span>' : ''}
+          </div>
+        `;
+      });
+      opinionHtml += '</div></div>';
+    }
+    
+    opinionDiv.innerHTML = opinionHtml;
+    resultDiv.insertBefore(opinionDiv, sentenceSentimentsDiv);
+  }
+
+  // 9. 展示句子级情感
   sentenceSentimentsDiv.innerHTML = '';
   if (emotion.sentence_sentiments && emotion.sentence_sentiments.length > 0) {
     sentenceSentimentsDiv.innerHTML = '<b>句子级情感分析：</b><ul>';
@@ -199,72 +361,76 @@ analyzeBtn.onclick = async function() {
     sentenceSentimentsDiv.innerHTML += '</ul>';
   }
 
-  // 6. 展示TTS参数
+  // 10. 展示TTS参数
   ttsParamsDiv.innerHTML = '';
   if (emotion.tts_params) {
-    const params = emotion.tts_params;
+    ttsParamsDiv.innerHTML = '<b>语音合成参数：</b><div class="tts-params-grid">';
+    const voiceInfo = emotion.tts_params.voice_info || {};
     
-    // 获取友好名称
-    const styleName = styleNameMap[params.style] || params.style;
-    const roleName = params.role ? (roleNameMap[params.role] || params.role) : "无";
+    Object.entries(emotion.tts_params).forEach(([key, value]) => {
+      let displayValue = value;
+      let displayName = key;
+      
+      if (key === 'style') {
+        displayName = '语音风格';
+        displayValue = styleNameMap[value] || value;
+      } else if (key === 'voice') {
+        displayName = '语音模型';
+        // 显示语音名+性别+描述
+        if (voiceInfo && voiceInfo.name) {
+          const gender = voiceInfo.gender === 'male' ? '男声' : (voiceInfo.gender === 'female' ? '女声' : '');
+          displayValue = `${voiceInfo.name}${gender ? ' (' + gender + ')' : ''}${voiceInfo.description ? ' - ' + voiceInfo.description : ''}`;
+        } else {
+          displayValue = voiceNameMap[value] || value;
+        }
+      } else if (key === 'rate') {
+        displayName = '语速调整';
+      } else if (key === 'pitch') {
+        displayName = '音调调整';
+      } else if (key === 'role') {
+        // 只显示voice支持的角色，role为None时不显示
+        if (!value || !voiceInfo || !voiceInfo.roles || !voiceInfo.roles.includes(value)) return;
+        displayName = '角色';
+        displayValue = roleNameMap[value] || value;
+      } else if (key === 'styledegree') {
+        displayName = '风格强度';
+      } else if (key === 'voice_info') {
+        return; // 不单独显示
+      }
+      
+      ttsParamsDiv.innerHTML += `
+        <div class="tts-param">
+          <div class="param-label">${displayName}</div>
+          <div class="param-value">${displayValue}</div>
+        </div>
+      `;
+    });
     
-    // 创建可视化的TTS参数面板
-    ttsParamsDiv.innerHTML = `
-      <b>语音合成参数：</b>
-      <div class="tts-params-grid">
-        <div class="tts-param">
-          <span class="param-label">语音:</span> 
-          <span class="param-value">${params.voice}</span>
-        </div>
-        <div class="tts-param">
-          <span class="param-label">风格:</span> 
-          <span class="param-value">${styleName} (${params.style})</span>
-        </div>
-        <div class="tts-param">
-          <span class="param-label">风格强度:</span> 
-          <span class="param-value">${params.styledegree || "1.0"}</span>
-        </div>
-        <div class="tts-param">
-          <span class="param-label">角色:</span> 
-          <span class="param-value">${roleName}</span>
-        </div>
-        <div class="tts-param">
-          <span class="param-label">语速:</span> 
-          <span class="param-value">${params.rate}</span>
-        </div>
-        <div class="tts-param">
-          <span class="param-label">音调:</span> 
-          <span class="param-value">${params.pitch}</span>
-        </div>
-      </div>
-    `;
+    ttsParamsDiv.innerHTML += '</div>';
   }
 
-  // 7. 合成语音
-  loadingDiv.style.display = "block";
-  loadingDiv.innerText = "正在合成语音...";
-  try {
-    const ttsRes = await fetch(`${API_URL}/tts`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        text,
-        voice: emotion.tts_params.voice,
-        style: emotion.tts_params.style,
-        rate: emotion.tts_params.rate,
-        pitch: emotion.tts_params.pitch,
-        role: emotion.tts_params.role,
-        styledegree: emotion.tts_params.styledegree
-      })
-    });
-    if (!ttsRes.ok) throw new Error("TTS error");
-    const audioBlob = await ttsRes.blob();
-    const audioUrl = URL.createObjectURL(audioBlob);
-    audio.src = audioUrl;
-    audio.style.display = "";
-    audio.play();
-    loadingDiv.style.display = "none";
-  } catch (e) {
-    loadingDiv.innerText = "语音合成失败，请检查后端服务";
+  // 11. 语音合成
+  if (emotion.tts_params) {
+    try {
+      const ttsRes = await fetch(`${API_URL}/tts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: text,
+          ...emotion.tts_params
+        })
+      });
+      
+      if (ttsRes.ok) {
+        const audioBlob = await ttsRes.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        audio.src = audioUrl;
+        audio.style.display = "block";
+      } else {
+        console.error("TTS failed:", ttsRes.status);
+      }
+    } catch (e) {
+      console.error("TTS error:", e);
+    }
   }
 }; 

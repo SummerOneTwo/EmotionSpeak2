@@ -140,6 +140,172 @@ button:hover {
   border-left: 3px solid #1890ff;
 }
 
+/* 情感强度分析样式 */
+.intensity-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+.intensity-item {
+  background: #f0f7ff;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  border-left: 3px solid #1890ff;
+}
+.intensity-label {
+  display: block;
+  font-size: 0.8em;
+  color: #666;
+  margin-bottom: 4px;
+}
+.intensity-value {
+  display: block;
+  font-weight: bold;
+  color: #1890ff;
+  font-size: 1.1em;
+}
+
+/* 文本特征样式 */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+.feature-item {
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+}
+.feature-label {
+  display: block;
+  font-size: 0.8em;
+  color: #666;
+  margin-bottom: 4px;
+}
+.feature-value {
+  display: block;
+  font-weight: 500;
+  color: #333;
+}
+
+/* 情感关键词样式 */
+.keywords-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.keyword-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 16px;
+  font-size: 0.9em;
+  position: relative;
+}
+.keyword-item.positive {
+  background: rgba(82, 196, 26, 0.1);
+  color: #52c41a;
+  border: 1px solid rgba(82, 196, 26, 0.3);
+}
+.keyword-item.negative {
+  background: rgba(245, 34, 45, 0.1);
+  color: #f5222d;
+  border: 1px solid rgba(245, 34, 45, 0.3);
+}
+.keyword-item.neutral {
+  background: rgba(250, 173, 20, 0.1);
+  color: #faad14;
+  border: 1px solid rgba(250, 173, 20, 0.3);
+}
+.keyword-text {
+  font-weight: 500;
+}
+.keyword-sentiment {
+  font-size: 0.8em;
+  opacity: 0.8;
+}
+.keyword-confidence {
+  font-size: 0.8em;
+  opacity: 0.7;
+}
+.keyword-negated {
+  background: #ff4d4f;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 0.7em;
+  margin-left: 4px;
+}
+
+/* 观点挖掘样式 */
+.opinion-section {
+  margin-top: 16px;
+}
+.opinion-section h4 {
+  margin: 0 0 12px 0;
+  color: #333;
+  font-size: 1em;
+}
+.aspects-grid, .opinions-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.aspect-item, .opinion-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  flex-wrap: wrap;
+}
+.aspect-item.positive, .opinion-item.positive {
+  background: rgba(82, 196, 26, 0.05);
+  border-left: 3px solid #52c41a;
+}
+.aspect-item.negative, .opinion-item.negative {
+  background: rgba(245, 34, 45, 0.05);
+  border-left: 3px solid #f5222d;
+}
+.aspect-item.neutral, .opinion-item.neutral {
+  background: rgba(250, 173, 20, 0.05);
+  border-left: 3px solid #faad14;
+}
+.aspect-text, .opinion-text {
+  font-weight: 500;
+  flex: 1;
+  min-width: 0;
+}
+.aspect-sentiment, .opinion-sentiment {
+  font-size: 0.8em;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background: #f0f0f0;
+}
+.aspect-confidence, .opinion-confidence {
+  font-size: 0.8em;
+  color: #666;
+}
+.opinion-aspect {
+  font-size: 0.8em;
+  color: #888;
+  font-style: italic;
+}
+.aspect-negated, .opinion-negated {
+  background: #ff4d4f;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 0.7em;
+}
+
 /* 句子级情感样式 */
 .sentence-sentiments ul {
   list-style: none;
@@ -209,23 +375,40 @@ button:hover {
   word-break: break-word;
 }
 
+/* 音频控件样式 */
 audio {
   width: 100%;
-  margin-top: 24px;
-  border-radius: 24px;
+  margin-top: 20px;
+  border-radius: 8px;
+  display: none;
 }
 
-/* 响应式调整 */
+/* 响应式设计 */
 @media (max-width: 600px) {
   .container {
-    margin: 20px 10px;
-    padding: 20px 16px;
+    margin: 20px 16px;
+    padding: 24px 20px;
   }
+  
   .emotion-grid {
     grid-template-columns: 1fr;
   }
+  
+  .intensity-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
   .tts-params-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
+  }
+  
+  .aspect-item, .opinion-item {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 

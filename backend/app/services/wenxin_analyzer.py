@@ -3,110 +3,93 @@ import json
 import logging
 import re
 from app.core.config import settings
-from typing import Dict, Any, Optional
+from app.services.voice_catalog import get_all_voices, get_voice_info
+from typing import Dict, Any
 
-# 提示词模板
+def build_voice_catalog_prompt():
+    voices = get_all_voices()
+    prompt = """
+【可选语音模型及参数】
+"""
+    for lang, vdict in voices.items():
+        prompt += f"\n{('中文' if lang=='chinese' else '英文')}语音模型:"
+        for vid, vinfo in vdict.items():
+            prompt += f"\n- {vid}（{vinfo['name']}，{vinfo['description']}，性别:{'女' if vinfo['gender']=='female' else '男'}）"
+            prompt += f"\n  支持角色: {', '.join(vinfo['roles'])}"
+            prompt += f"\n  支持风格: {', '.join(vinfo['styles'])}"
+    prompt += "\n【注意】voice、role、style必须严格选择上表可用项，role必须在voice支持的角色列表中，style必须在voice支持的风格列表中。"
+    return prompt
+
 PROMPT_TEMPLATE = """
-你是一个专业的情感分析和语音合成参数调整专家。我将给你一段文本及其详细的情感分析结果，你需要根据这些情感分析结果，为Azure Text-to-Speech服务推荐最合适的语音合成参数。
+你是一个专业的语音合成参数推荐专家。请根据下方文本和情感分析结果，为Azure TTS推荐最合适的参数，只需返回一个标准JSON对象，字段如下：
+- voice: 语音模型ID（必须是官方支持的ID）
+- style: 语音风格（字符串）
+- rate: 语速（如+10%）
+- pitch: 音调（如+2st）
+- role: 角色（可为null或官方支持的角色）
+- styledegree: 风格强度（如1.0）
 
-分析结果包含以下信息:
-- overall_sentiment: 整体情感倾向 (positive/negative/neutral)
-- confidence_scores: 各情感类型的置信度
-- detailed_emotions: 详细情感分类及其强度
-- emotion_intensity: 情感强度 (0-100)
-- sentence_sentiments: 句子级情感分析
+{voice_catalog}
 
-请你根据这些信息，推荐以下语音合成参数:
-1. voice: 语音模型，例如:
-   - 中文模型: zh-CN-XiaoxiaoNeural(女声), zh-CN-YunyangNeural(男声)等
-   - 英文模型: en-US-AriaNeural(女声), en-US-GuyNeural(男声)等
-2. style: 语音风格，如cheerful, sad, angry, calm等
-3. rate: 语速调整，范围从"-30%"到"+30%"
-4. pitch: 音调调整，范围从"-12st"到"+12st"
-5. role: (可选)角色，如YoungAdultFemale, OlderAdultMale等
-6. styledegree: 风格强度，范围从"0.5"到"2.0"
+只需返回一个JSON对象，不要多余解释。
 
-必须返回一个有效的JSON对象，包含以上参数。
-
-文本内容: {text}
-情感分析结果: {emotion_data}
+文本: {text}
+情感分析: {emotion_data}
 """
 
-async def analyze_with_wenxin(text: str, emotion_data: Dict[str, Any]) -> Dict[str, Any]:
-    """使用百度文心分析情感结果并推荐TTS参数"""
-    # 确保API密钥已配置
+def analyze_with_wenxin(text: str, emotion_data: Dict[str, Any]) -> Dict[str, Any]:
     if not settings.BAIDU_WENXIN_API_KEY:
-        logging.warning("Baidu Wenxin API not configured, falling back to rule-based params")
-        return None
-    
+        raise RuntimeError("Baidu Wenxin API not configured")
     try:
-        # 准备API请求 - 使用v2 API
         url = "https://qianfan.baidubce.com/v2/chat/completions"
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {settings.BAIDU_WENXIN_API_KEY}"
         }
-        
-        # 准备提示词
+        voice_catalog = build_voice_catalog_prompt()
         prompt = PROMPT_TEMPLATE.format(
             text=text,
-            emotion_data=json.dumps(emotion_data, ensure_ascii=False)
+            emotion_data=json.dumps(emotion_data, ensure_ascii=False, indent=2),
+            voice_catalog=voice_catalog
         )
-        
-        # 构建请求参数
         payload = {
             "messages": [{"role": "user", "content": prompt}],
             "model": "ernie-4.0-8k",
             "temperature": 0.1,
             "top_p": 0.95,
         }
-        
-        # 发送API请求
+        logging.info(f"Wenxin请求: {prompt[:200]}...")
         response = requests.post(url, headers=headers, json=payload)
-        
         if response.status_code != 200:
-            logging.error(f"Error response from Baidu Wenxin API: Status code {response.status_code}")
-            return None
-            
+            raise RuntimeError(f"Wenxin API error: {response.status_code}")
         result = response.json()
-        
-        # 处理v2 API响应格式
-        content = ""
-        if 'choices' in result and len(result['choices']) > 0:
+        content = ''
+        if 'choices' in result and result['choices']:
             content = result['choices'][0].get('message', {}).get('content', '')
-        
-        if content:
-            # 尝试从响应文本中提取JSON
-            json_match = re.search(r'\{.*\}', content, re.DOTALL)
-            if json_match:
-                json_text = json_match.group(0)
-                
-                # 提取TTS参数
-                try:
-                    tts_params = json.loads(json_text)
-                    
-                    # 检查和清理参数
-                    required_keys = ['voice', 'style', 'rate', 'pitch']
-                    for key in required_keys:
-                        if key not in tts_params:
-                            logging.warning(f"Missing required key {key} in response")
-                            return None
-                            
-                    # 移除可能存在的无效字段
-                    cleaned_params = {}
-                    for key, value in tts_params.items():
-                        if key in ['voice', 'style', 'rate', 'pitch', 'role', 'styledegree']:
-                            cleaned_params[key] = value
-                            
-                    return cleaned_params
-                    
-                except json.JSONDecodeError:
-                    return None
-            else:
-                return None
-        else:
-            return None
-            
+        logging.info(f"Wenxin返回: {content[:200]}...")
+        # 提取JSON
+        json_match = re.search(r'\{.*\}', content, re.DOTALL)
+        if not json_match:
+            raise ValueError("Wenxin未返回有效JSON")
+        tts_params = json.loads(json_match.group(0))
+        # 校验voice/role
+        all_voices = get_all_voices()
+        all_voice_ids = list(all_voices['chinese'].keys()) + list(all_voices['english'].keys())
+        if tts_params.get('voice') not in all_voice_ids:
+            raise ValueError(f"Wenxin返回的voice不在官方列表: {tts_params.get('voice')}")
+        voice_info = get_voice_info(tts_params['voice'])
+        if tts_params.get('role') and voice_info:
+            if tts_params['role'] not in voice_info.get('roles', []):
+                raise ValueError(f"Wenxin返回的role不在voice支持列表: {tts_params['role']}")
+        # 其它字段简单校验
+        for k in ['style', 'rate', 'pitch']:
+            if k not in tts_params or not isinstance(tts_params[k], str):
+                raise ValueError(f"Wenxin返回的{k}字段无效")
+        # styledegree允许float或str，最终转为str
+        if 'styledegree' not in tts_params or not isinstance(tts_params['styledegree'], (str, float, int)):
+            raise ValueError("Wenxin返回的styledegree字段无效")
+        tts_params['styledegree'] = str(tts_params['styledegree'])
+        return tts_params
     except Exception as e:
-        logging.error(f"Error using Baidu Wenxin API: {str(e)}")
-        return None 
+        logging.error(f"Wenxin分析失败: {str(e)}")
+        raise 
