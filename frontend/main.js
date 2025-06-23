@@ -211,7 +211,6 @@ function renderTTSParams(ttsParams) {
   }
   
   let html = '';
-  html += '<button id="copyTTSBtn" class="copy-btn">复制参数</button>';
   html += '<div class="tts-params-grid">';
   const voiceInfo = ttsParams.voice_info || {};
   // voice
@@ -231,20 +230,22 @@ function renderTTSParams(ttsParams) {
   html += '</div>';
   
   const { button, content } = createCollapsible('AI推荐朗读参数', html, true);
+  
+  // 创建并添加复制按钮到标题栏
+  const copyBtn = document.createElement('button');
+  copyBtn.className = 'copy-btn-header';
+  copyBtn.innerText = '复制';
+  copyBtn.onclick = (e) => {
+      e.stopPropagation(); // 阻止折叠/展开事件
+      copyTTSParams(ttsParams);
+      copyBtn.innerText = '已复制!';
+      setTimeout(() => { copyBtn.innerText = '复制'; }, 2000);
+  };
+  button.appendChild(copyBtn);
+
   ttsParamsDiv.innerHTML = '';
   ttsParamsDiv.appendChild(button);
   ttsParamsDiv.appendChild(content);
-  
-  // 添加复制按钮到内容区域
-  const contentDiv = ttsParamsDiv.querySelector('.collapsible-inner');
-  const copyBtn = document.createElement('button');
-  copyBtn.id = 'copyTTSBtn';
-  copyBtn.className = 'copy-btn';
-  copyBtn.innerText = '复制参数';
-  contentDiv.prepend(copyBtn);
-  
-  // 绑定复制按钮
-  document.getElementById('copyTTSBtn').onclick = () => copyTTSParams(ttsParams);
 }
 
 // 渲染观点挖掘数据
@@ -528,28 +529,28 @@ function initCollapsibles() {
   }
 }
 
-// 创建折叠面板
-function createCollapsible(title, content, isOpen = false) {
-  const collapsibleButton = document.createElement('button');
-  collapsibleButton.className = 'collapsible';
-  if (isOpen) collapsibleButton.classList.add('active');
-  collapsibleButton.innerText = title;
+// 创建一个可折叠的区块
+function createCollapsible(title, contentHTML, isOpen = false) {
+  const button = document.createElement('button');
+  button.className = 'collapsible';
   
-  const collapsibleContent = document.createElement('div');
-  collapsibleContent.className = 'collapsible-content';
+  button.textContent = title;
+
+  const content = document.createElement('div');
+  content.className = 'collapsible-content';
   
   const collapsibleInner = document.createElement('div');
   collapsibleInner.className = 'collapsible-inner';
-  collapsibleInner.innerHTML = content;
+  collapsibleInner.innerHTML = contentHTML;
   
-  collapsibleContent.appendChild(collapsibleInner);
+  content.appendChild(collapsibleInner);
   
   if (isOpen) {
     // 如果初始状态为打开，设置最大高度
     setTimeout(() => {
-      collapsibleContent.style.maxHeight = collapsibleContent.scrollHeight + "px";
+      content.style.maxHeight = content.scrollHeight + "px";
     }, 10);
   }
   
-  return { button: collapsibleButton, content: collapsibleContent };
+  return { button: button, content: content };
 } 

@@ -1,65 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+:root {
+  --primary-color: #007bff;
+  --primary-hover: #0056b3;
+  --primary-bg-light: rgba(0, 123, 255, 0.1);
+  --background-color: #f8f9fa;
+  --surface-color: #ffffff;
+  --text-color: #212529;
+  --text-muted: #6c757d;
+  --border-color: #dee2e6;
+  --border-color-light: #f0f0f0;
+  
+  /* Retain original emotion colors for consistency in charts/indicators */
+  --original-positive: #52c41a;
+  --original-negative: #f5222d;
+  --original-warning: #faad14;
+}
+
 body {
-  font-family: 'Segoe UI', 'Microsoft YaHei', Arial, sans-serif;
-  background: #f6f8fa;
+  font-family: var(--font-family-sans-serif);
+  background: var(--background-color);
+  color: var(--text-color);
   margin: 0;
-  padding: 0;
+  padding: 2rem 1rem; /* Add breathing room */
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 .container {
-  max-width: 85%;
-  width: 1100px;
-  margin: 40px auto 0 auto;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-  padding: 32px 40px 24px 40px;
+  width: 90%;
+  max-width: 1100px;
+  margin: 2rem auto;
+  background: var(--surface-color);
+  border-radius: 16px;
+  /* Softer, more modern shadow */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 10px 20px rgba(0, 0, 0, 0.07);
+  padding: 40px;
 }
 h1 {
-  font-size: 2.1em;
-  margin-bottom: 18px;
-  color: #222;
+  font-size: 2.5em;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: var(--text-color);
   text-align: center;
+  letter-spacing: -1px;
 }
 h1 span {
-  font-size: 0.6em;
-  color: #888;
+  font-size: 0.5em;
+  font-weight: 400;
+  color: var(--text-muted);
+  display: block;
+  margin-top: 8px;
 }
 textarea {
   width: 100%;
   border-radius: 8px;
-  border: 1px solid #d9d9d9;
-  padding: 12px;
+  border: 1px solid var(--border-color);
+  padding: 14px;
   font-size: 1.1em;
-  margin-bottom: 16px;
+  font-family: inherit;
+  margin-bottom: 20px;
   resize: vertical;
-  min-height: 80px;
+  min-height: 120px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: #fdfdfd;
 }
+
+textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-bg-light);
+}
+
 button {
-  background: #52c41a;
+  background-image: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
   color: #fff;
   border: none;
   border-radius: 8px;
-  padding: 10px 28px;
-  font-size: 1.1em;
+  padding: 12px 32px;
+  font-size: 1.15em;
+  font-weight: 500;
   cursor: pointer;
-  margin-bottom: 18px;
-  transition: background 0.2s;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
   display: block;
   margin-left: auto;
   margin-right: auto;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
 }
 button:hover {
-  background: #389e0d;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
 }
+
+button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+}
+
 .loading {
-  color: #faad14;
+  color: var(--primary-color);
   font-weight: bold;
   display: none;
   margin: 20px 0;
   text-align: center;
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .result {
   display: none;
-  margin-top: 20px;
+  margin-top: 30px;
+  animation: fadeIn 0.5s ease-out forwards;
 }
 .sentiment {
   display: flex;
@@ -84,23 +145,24 @@ button:hover {
 .section {
   margin-bottom: 24px;
   padding-top: 10px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--border-color-light);
 }
 .section-title {
   margin-bottom: 8px;
   font-weight: bold;
-  color: #1f1f1f;
+  color: var(--text-color);
 }
 .section b {
   display: block;
   margin-bottom: 12px;
-  color: #222;
+  color: var(--text-color);
   font-size: 1.05em;
 }
 
 /* 折叠面板样式 */
 .collapsible {
-  background-color: #f6f8fa;
+  background-color: var(--primary-color);
+  color: white;
   cursor: pointer;
   padding: 12px 15px;
   width: 100%;
@@ -115,12 +177,11 @@ button:hover {
   justify-content: space-between;
   align-items: center;
   transition: background-color 0.3s;
-  color: #222;
-  border-left: 3px solid #1890ff;
+  position: relative; /* 为子元素的绝对定位提供基准 */
 }
 
 .collapsible:hover {
-  background-color: #e6f7ff;
+  background-color: var(--primary-bg-light);
 }
 
 .collapsible:after {
@@ -128,7 +189,8 @@ button:hover {
   font-weight: bold;
   float: right;
   font-size: 1.2em;
-  color: #1890ff;
+  color: var(--arrow-color, var(--primary-color));
+  transition: color 0.3s;
 }
 
 .active:after {
@@ -139,7 +201,7 @@ button:hover {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease-out;
-  background-color: white;
+  background-color: var(--surface-color);
   border-radius: 0 0 8px 8px;
   margin-bottom: 10px;
 }
@@ -152,7 +214,7 @@ button:hover {
 .sentence-list {
   max-height: 400px;
   overflow-y: auto;
-  border: 1px solid #eee;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 5px;
   margin-top: 10px;
@@ -163,7 +225,7 @@ button:hover {
   display: inline-block;
   width: 65px;
   height: 10px;
-  background-color: #f0f0f0;
+  background-color: var(--border-color-light);
   border-radius: 5px;
   overflow: hidden;
   margin-left: 10px;
@@ -177,19 +239,19 @@ button:hover {
 }
 
 .progress-positive {
-  background-color: #52c41a;
+  background-color: var(--original-positive);
 }
 
 .progress-negative {
-  background-color: #f5222d;
+  background-color: var(--original-negative);
 }
 
 .progress-neutral {
-  background-color: #faad14;
+  background-color: var(--original-warning);
 }
 
 .progress-mixed {
-  background: linear-gradient(90deg, #52c41a 33%, #f5222d 33%, #f5222d 66%, #faad14 66%);
+  background: linear-gradient(90deg, var(--original-positive) 33%, var(--original-negative) 33%, var(--original-negative) 66%, var(--original-warning) 66%);
 }
 
 /* 两列布局容器 */
@@ -211,13 +273,15 @@ button:hover {
   display: flex;
   align-items: center;
   padding: 12px;
-  background: #f9f9f9;
+  background: var(--background-color);
   border-radius: 8px;
   transition: all 0.2s;
+  border: 1px solid transparent; /* Prepare for hover border */
 }
 .emotion-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+  border-color: var(--border-color);
 }
 .emotion-emoji {
   font-size: 2em;
@@ -233,18 +297,18 @@ button:hover {
 .emotion-bar-container {
   width: 100%;
   height: 6px;
-  background: #eaeaea;
+  background: var(--border-color);
   border-radius: 3px;
   overflow: hidden;
 }
 .emotion-bar {
   height: 100%;
-  background: linear-gradient(90deg, #52c41a, #1890ff);
+  background: linear-gradient(90deg, var(--original-positive), var(--primary-color));
   border-radius: 3px;
 }
 .emotion-percentage {
   font-size: 0.8em;
-  color: #888;
+  color: var(--text-muted);
   margin-top: 4px;
 }
 
@@ -320,45 +384,42 @@ button:hover {
 .keyword-item {
   display: flex;
   align-items: center;
-  gap: 6px;
   padding: 6px 10px;
-  border-radius: 16px;
-  font-size: 0.9em;
-  position: relative;
+  background: var(--background-color);
+  border-radius: 6px;
+  margin-bottom: 6px;
+  border-left: 3px solid;
 }
 .keyword-item.positive {
-  background: rgba(82, 196, 26, 0.1);
-  color: #52c41a;
-  border: 1px solid rgba(82, 196, 26, 0.3);
+  border-color: var(--original-positive);
 }
 .keyword-item.negative {
-  background: rgba(245, 34, 45, 0.1);
-  color: #f5222d;
-  border: 1px solid rgba(245, 34, 45, 0.3);
+  border-color: var(--original-negative);
 }
 .keyword-item.neutral {
-  background: rgba(250, 173, 20, 0.1);
-  color: #faad14;
-  border: 1px solid rgba(250, 173, 20, 0.3);
+  border-color: var(--original-warning);
 }
 .keyword-text {
   font-weight: 500;
 }
 .keyword-sentiment {
   font-size: 0.8em;
-  opacity: 0.8;
+  color: var(--text-muted);
+  margin-left: 8px;
 }
 .keyword-confidence {
   font-size: 0.8em;
-  opacity: 0.7;
+  color: var(--text-muted);
+  margin-left: auto;
+  font-weight: 500;
 }
 .keyword-negated {
-  background: #ff4d4f;
-  color: white;
-  padding: 2px 6px;
-  border-radius: 10px;
-  font-size: 0.7em;
-  margin-left: 4px;
+  margin-left: 6px;
+  color: var(--original-negative);
+  font-weight: bold;
+  font-size: 0.9em;
+  text-decoration: line-through;
+  cursor: help;
 }
 
 /* 观点挖掘样式 */
@@ -380,55 +441,55 @@ button:hover {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
   padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 0.9em;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  background-color: var(--background-color);
+  border-radius: 6px;
+  margin-bottom: 8px;
+  border-left: 3px solid;
+  transition: box-shadow 0.2s;
+}
+.aspect-item:hover, .opinion-item:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 .aspect-item.positive, .opinion-item.positive {
-  background: rgba(82, 196, 26, 0.05);
-  border-left: 3px solid #52c41a;
+  border-color: var(--original-positive);
 }
 .aspect-item.negative, .opinion-item.negative {
-  background: rgba(245, 34, 45, 0.05);
-  border-left: 3px solid #f5222d;
+  border-color: var(--original-negative);
 }
 .aspect-item.neutral, .opinion-item.neutral {
-  background: rgba(250, 173, 20, 0.05);
-  border-left: 3px solid #faad14;
+  border-color: var(--original-warning);
 }
 .aspect-text, .opinion-text {
   font-weight: 500;
-  color: #222;
-  margin-right: 6px;
+  color: var(--text-color);
+  margin-right: 8px;
 }
 .aspect-sentiment, .opinion-sentiment {
-  font-size: 0.8em;
-  padding: 2px 6px;
-  border-radius: 10px;
-  background: rgba(0,0,0,0.05);
-  color: #666;
+  font-size: 0.85em;
+  color: var(--text-muted);
+  margin-right: auto;
 }
 .aspect-confidence, .opinion-confidence {
-  font-size: 0.8em;
-  color: #999;
+  font-size: 0.85em;
+  color: var(--text-muted);
+  font-weight: 500;
 }
 .opinion-aspect {
   font-size: 0.8em;
-  width: 100%;
-  margin-top: 4px;
-  padding-top: 4px;
-  border-top: 1px dashed #eee;
-  color: #888;
+  font-style: italic;
+  color: var(--text-muted);
+  margin-left: 10px;
+  flex-basis: 100%;
+  margin-top: 2px;
 }
 .aspect-negated, .opinion-negated {
-  background: #ff4d4f;
-  color: white;
-  padding: 2px 6px;
-  border-radius: 10px;
-  font-size: 0.7em;
-  margin-left: 4px;
+  margin-left: 8px;
+  color: var(--original-negative);
+  font-weight: bold;
+  font-size: 0.9em;
+  text-decoration: line-through;
+  cursor: help;
 }
 
 /* 句子级情感分析样式 */
@@ -438,38 +499,42 @@ button:hover {
   margin: 16px 0 0 0;
 }
 .sentence-item {
-  margin-bottom: 12px;
-  padding: 12px;
-  background: #f9f9f9;
-  border-radius: 8px;
+  padding: 10px;
+  border-bottom: 1px solid var(--border-color-light);
+  display: flex;
+  flex-direction: column;
+}
+.sentence-item:last-child {
+  border-bottom: none;
 }
 .sentence-sentiment {
-  display: block;
-  font-weight: 500;
+  font-size: 0.9em;
+  color: var(--text-muted);
   margin-bottom: 6px;
 }
 .sentence-bar-container {
-  height: 4px;
-  display: flex;
-  margin-bottom: 8px;
-  border-radius: 2px;
+  height: 8px;
+  width: 100%;
+  background-color: var(--border-color-light);
+  border-radius: 4px;
   overflow: hidden;
 }
 .sentence-bar {
   height: 100%;
 }
 .sentence-bar.positive {
-  background-color: #52c41a;
+  background-color: var(--original-positive);
 }
 .sentence-bar.negative {
-  background-color: #f5222d;
+  background-color: var(--original-negative);
 }
 .sentence-bar.neutral {
-  background-color: #faad14;
+  background-color: var(--original-warning);
 }
 .sentence-text {
-  font-size: 0.95em;
+  margin-top: 8px;
   line-height: 1.5;
+  color: var(--text-muted);
 }
 
 /* TTS 参数样式 */
@@ -489,23 +554,21 @@ button:hover {
   flex-direction: column;
 }
 .param-label {
-  font-size: 0.8em;
-  color: #666;
-  margin-bottom: 4px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 2px;
 }
 .param-value {
   font-weight: 500;
-  color: #1890ff;
-  word-break: break-word;
+  color: var(--text-color);
+  font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+  font-size: 1.1em;
 }
 audio {
   width: 100%;
-  margin: 20px auto;
-  border-radius: 24px;
-  display: none;
-  background: #f0f0f0;
-  height: 40px;
-  max-width: 800px;
+  margin-top: 24px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
 }
 
 /* 响应式调整 */
@@ -545,50 +608,56 @@ audio {
 
 footer {
   text-align: center;
-  color: #999;
-  margin: 30px 0;
+  margin-top: 40px;
+  padding: 20px;
+  color: var(--text-muted);
   font-size: 0.9em;
+  border-top: 1px solid var(--border-color-light);
 }
 
-/* 复制按钮样式 */
-.copy-btn {
+/* 位于标题栏的复制按钮新样式 */
+.copy-btn-header {
   position: absolute;
-  right: 0;
-  top: -2px;
-  background: #e6f7ff;
-  color: #1890ff;
-  font-size: 0.8em;
+  right: 40px; /* 定位到 +/- 图标的左侧 */
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
   padding: 4px 10px;
-  margin: 0;
-  border-radius: 4px;
-  border: 1px solid #91d5ff;
+  font-size: 0.8em;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
-.copy-btn:hover {
-  background: #bae7ff;
+
+.copy-btn-header:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: white;
 }
+
 .param-id {
   font-size: 0.8em;
-  color: #999;
-  font-weight: normal;
+  color: var(--text-muted);
+  font-family: "SF Mono", "Fira Code", "Consolas", monospace;
 }
 .param-desc {
-  font-size: 0.8em;
-  color: #888;
+  font-size: 0.9em;
   margin-top: 4px;
-  font-style: italic;
+  color: var(--text-muted);
 }
 .styledegree-bar {
+  height: 6px;
   width: 100%;
-  height: 4px;
-  background: #e8e8e8;
-  border-radius: 2px;
-  overflow: hidden;
+  background-color: var(--border-color-light);
+  border-radius: 3px;
   margin-top: 4px;
-  margin-bottom: 4px;
+  overflow: hidden;
 }
 .styledegree-inner {
   height: 100%;
-  background: #1890ff;
-  border-radius: 2px;
+  width: 0; /* JS will set this */
+  background-color: var(--primary-color);
+  border-radius: 3px;
 } 
